@@ -1,0 +1,51 @@
+>> Through the following assigmnet we will learn
+   to create a proccess , syscal api to create child process.
+   running the process on different cpu cores. backgroud and foreground process.
+
+
+
+>>1 Using while1.c provided, do following activities.
+
+   > compile and load 2 instance in background
+    and check the ps and top command
+
+
+   > do the above step again and observe.
+
+   >Use taskset to run the process on a given cpu no.
+
+
+>>2 repeat the  problem 1, by changing the nice values of each instance,
+    using renice command, use renice to modify the values in +ve range only,
+    like +5 | +10 | +15 ­ observe using ps and top commands – what are your
+    conclusions ?
+
+    Note : with administrative privileges, you can change the nice priority
+           values to ­ve values, which will provide very large time­share values
+           to processes !!! you can assign ­5 | ­10 | ­10 | ­20 to different
+           processes on a given processor/scheduler instance
+
+           refer to manual pages of renice !!!
+
+>>3 using chrt. utility, can you modify scheduling policy of active applications/
+    processes, in problems 1) to FIFO or RR, with appropriate real­time
+    priorities – use the following policy and priority assignments ???
+
+    a) assign FIFO with equal priority to a few processes and assign TS policy
+       to a few processes – you need to assign these processes to a specific
+       processor / scheduler instance
+    b) assign RR with equal priority to a few processes and test – once again,
+       you need to assign these processes to a specific processor/scheduler
+       instance.
+       
+>>4 Create child process using fork(), try to observe
+    the defferent stats of processes.
+    Observe the O/P of ps and top
+
+>>5 Create a process and implement execl() to run another command.
+    Observe the O/P in top and ps. Check the PID and PPID and share
+    your observation.
+    
+>>6 Create child process using fork(), then call execl() from that
+    child process and run aother command from that. Check the PID, PPID
+    Share your observation.
