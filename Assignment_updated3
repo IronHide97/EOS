@@ -1,0 +1,26 @@
+>> In this assignment we will be implementing IPC like
+message-queue, pipe, shared-memory, signals and socket.
+
+>>1 Create a program, have 2 child created from the parent
+    process and establish pipe ipc between 2 childs.
+
+>>2 In the above question extend the program to have pipe to 
+    have bi-directional communication.
+
+>>3 Write a program to implement named-pipe IPC/FIFO between two
+    unrelated process.
+
+>>4 Write a program to implement the message-queue IPC.
+
+>>5 Extend the above question to have M-que IPC with two
+    unrelated program.
+
+>>6 Write a prgram to implement Shared memory IPC between 2
+    processes.
+
+>>7 Write a program to implement signals IPC.
+
+>>8 Write a program to implement socket IPC between two process
+    having server and client relation.
+
+
