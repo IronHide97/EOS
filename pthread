@@ -1,0 +1,25 @@
+int pthread_create(pthread_t *thread, const pthread_attr_t *attr,void *(*method)(void *), void *arg);
+	The pthread_create function creates a new thread and starts executing the method function in that thread. The method function is the entry point of the thread, and it will run concurrently with the main thread or any other existing threads in the program. The pthread_create function returns 0 on success or an error code if it fails to create the thread.
+
+
+int pthread_join(pthread_t thread, void **retval);
+	The pthread_join function waits for the specified thread to finish executing before continuing the execution of the calling thread. If the thread has already terminated, pthread_join returns immediately. The retval parameter can be used to obtain the exit status of the joined thread. If retval is not needed, you can pass NULL.
+
+
+void pthread_exit(void *retval);
+	The pthread_exit function terminates the calling thread and returns the exit value specified by retval. The exit value can later be retrieved using pthread_join or by inspecting the thread's exit status.
+
+
+int pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t *attr);
+	The pthread_mutex_init function initializes the mutex object pointed to by mutex with the attributes specified by attr. If attr is NULL, default attributes are used.
+
+
+int pthread_mutex_destroy(pthread_mutex_t *mutex);
+	The pthread_mutex_destroy function destroys the mutex object pointed to by mutex. It is important to note that the mutex should not be locked by any thread when this function is called. If the mutex is locked, the behavior is undefined.
+
+int pthread_mutex_lock(pthread_mutex_t *mutex);
+	The pthread_mutex_lock function attempts to acquire the lock on the mutex pointed to by mutex. If the mutex is currently unlocked, the calling thread acquires the lock and proceeds to enter the critical section. If the mutex is already locked by another thread, the calling thread will be blocked until the mutex becomes available
+
+int pthread_mutex_unlock(pthread_mutex_t *mutex);
+	The pthread_mutex_unlock function releases the lock on the mutex pointed to by mutex. This allows other threads that are waiting for the mutex to acquire the lock and enter the critical section.
+
