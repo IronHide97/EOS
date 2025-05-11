@@ -1,0 +1,16 @@
+This assigment will cover the synchronization.
+
+1>> Using the shared memory IPC try to see race condition. Have one
+    shared structure. Modify that in two different process.
+
+2>> From Que.1 after seeing Race condition, Try to implement a synchronizaion
+    techique. Here try to achive above using binary semaphore.
+    Now after implement binary semaphore share your observation on the O/P.
+
+3>> In the above case when one process have taken the semphore what will haven to the
+    other process if it tries to take semaphore. Refer to ps or top to verify your
+    learning about synchronization.
+
+4>> Implement one example of counting semaphore. What difference you see between counting
+    and binary semaphore.
+
