@@ -1,0 +1,13 @@
+In this assignment we will cover threads,POSIX thread api.
+
+1>> Write a program to create a thread in main thread and see the O/P
+    of top and ps corresponding to that thread and state your observtion.
+
+2>> Write a program to have two child process from a parent process
+    and create a thread from each thread.
+
+3>> In the above program have one shared resource or a global structure
+    and try to update the structure from one thread and read from other
+    thread.
+
+4>> Try to synchronize the threads using MUTEX.
