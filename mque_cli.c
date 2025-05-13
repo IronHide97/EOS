@@ -29,6 +29,6 @@ int main() {
       }
 
     printf("Received message: %s\n", msg.mtext);
-
+    msgctl(msgqid,IPC_RMID, NULL);
     return 0;
 }
