@@ -1,0 +1,707 @@
+this document will cover all the installation, configuration and 
+build steps of packages, for Embedded-Linux OS development set-up, 
+for BeagleBone-Black target 
+--->to understand certain components used in this set-up of 
+    an embedded-linux system, we need to study and understand
+    the following :
+    --->linux device-model/device-driver model
+    --->certain device-driver frame-works 
+    --->device-tree scripting and their rules  
+    --->in addition, we need to refer to a few 
+        kernel-documentation files, like 
+        Documentation/devicetree/usage-model.txt
+    --->also, a few references related to the above
+
+step 1)
+--->let us install a set of packages on a host-development platform 
+--->let us assume, that an Ubuntu Linux OS is being used - many of 
+these steps will change, if you use another Linux-OS host-development 
+platform 
+-->run and install the following packages 
+   
+   sudo apt-get update
+   sudo install aptitude
+   aptitude install libncurses5-dev:amd64
+
+   sudo aptitude install device-tree-compiler lzma lzop libncurses5-dev:amd64 libssl-dev:amd64 minicom 
+   aptitude install bison
+   aptitude install flex
+   apt-get install make
+   
+   aptitude install libncurses5-dev:amd64
+
+//   apt-get install libncurses5
+(note : if we need to install a specific package, we can run 
+        aptitude install libssl-dev:amd64 - we can repeat the previous command, 
+        for other, packages, if needed ?? ) 
+
+
+//note : the above steps are based on different developers/engineers/vendors , 
+//       who have installed and tested the following development 
+//       packages/tools 
+
+
+step 2)
+
+  ---->typically, create a work-space, as below :
+       mkdir -p  /home/<name>/embedded_ws_sep2021
+--->a minimum of 100GB is needed 
+
+  --->we must place below mentioned packages, in this 
+      work-space directory ??
+ 
+  --->in addition to the previous packages, we need very, specific 
+      packages, for our kernel-development set-up  
+
+    a) --->as per a specific set-up, we need to install a 
+           specific version of a cross tool-chain package 
+--->do not use the native tool-chain ---> what is the native tool-chain's
+    architecture ---> x86_64   
+--->we need to use which architecture's tool-chain ?? 
+      --->arm-32 
+        --->tar xf gcc-linaro-6.5.0-2018.12-x86_64_arm-linux-gnueabihf.tar.xz
+
+        --->ls -l /home/<name>/embedded_ws_2021_pune/gcc-linaro-6.5.0-2018.12-x86_64_arm-linux-gnueabihf/
+
+         -->do the following  and set the PATH environment-variable of the current-shell - 
+            this PATH environment-variable must be set to include cross tool-chain's
+            location - otherwise, cross tool-chain's tools will not be visible/
+            accessible :
+    -->PATH=$PATH:/home/<name>/embedded_ws_2021_pune/gcc-linaro-6.5.0-2018.12-x86_64_arm-linux-gnueabihf/bin 
+
+    b) --->as per a specific set-up, we need to install a 
+           specific version of  kernel-source trees - this is based on 
+           4.19.y - we will use this, for now - if really, needed, we will
+           use another version....there is no bias ??
+
+           tar zxvf  bb_b_KERNEL.tar.gz 
+
+           cd  /home/<name>/embedded_ws_2021_pune/KERNEL
+
+           --->now, check echo $PATH - it should contain
+           (--->echo $ENVVARi   ---> we can do echo $PATH to print the settings, in PATH 
+                                     environment-variable, as per shell's rules  
+            --->echo $HOME      ---> this will print the environment variable, HOME )
+
+           (if we do , echo PATH ----> just print PATH - just a string, do not dereference)
+           (if we do , echo HOME ----> just print PATH - just a string, do not dereference)
+
+             
+               /home/<name>/embedded_ws_2021_pune/gcc-linaro-6.5.0-2018.12-x86_64_arm-linux-gnueabihf/bin
+
+           --->#arm-linux-gnueabihf-    and use tab key .....it should list cross tool-chain's
+                                                             tools 
+
+              //note : if cross tool-chain's tools are not listed, our PATH setting is 
+              //       incorrect, so we may need to do a)  of step 2) 
+
+
+step 3) 
+
+       --->we will configure and build, using the above kernel-source tree 
+       **********************************************************************
+	--->slightly modified steps will be used, based on 
+           "Linux_kernel_space_dev_modules.txt"
+       --->so, for basics, refer to Linux_kernel_space_dev_modules.txt
+**********************************************************************
+       --->however, for specific commands and options, refer to this 
+           document 
+       --->in the future, the  commands and options can change, so be 
+           aware ???
+
+       -->enter,  into the kernel-source-directory
+          --->cd /home/<name>/embedded_ws_2021_pune/KERNEL
+--->is this source-tree same as that of GPOS kernel source-tree ?
+    the answer is NO - this kernel source-tree is a modified 
+    version of a specific SoC/board and provided by community
+    developers - this is very common in embedded OSes - 
+    either a community will provide, or a vendor will provide   
+     
+       ---->if you are already in <kernel source tree>, it is fine -
+            just check that you are in kernel source tree ??
+            --->pwd  
+
+       ---->basic steps of kernel-build are same, as that of a GPOS kernel,
+            but the commands,options and certain steps will differ
+
+
+       a)make ARCH=arm mrproper
+            ---->we are configuring and building this kernel/binaries/
+                 dynamic-modules, for an ARM-platform, so this step 
+--->we need to provide ARCH=arm, so that arm specific directories
+    and files are affected - otherwise, x86_64 specific directories
+    and files will be affected - in addition, architecture-independent 
+    directories and files are also affected 
+
+            --->this is not a native kernel-build ??
+            ---->do only, once at the start of the project...
+
+//note ---> we must be, in kernel-source tree's top-directory, as 
+//          mentioned above - otherwise, there will be errors       
+
+      b) -->download a template kernel-configuration file , as per 
+            vendor/developers/engineers 
+--->in this case, a template config is taken from one of the
+    community developers and modified to suit our requirements  
+        --->cp config-bb-b-4.19-eos-drivers  <ksrctree>/.config  
+           
+           //this config is , for a specific
+           //chip-set and board- 
+           //this kernel-configuration file contains several kernel-
+           //configuration parameters, including configuration/
+           //selection of embedded-chip/controller/SoC and board
+--->many of these selections are different from GPOS-kernel 
+    set-up 
+
+
+   ---->in the above step, we are providing an appropriate
+        config file, for kernel-configuration
+   ---->this will include/enable and exclude/disable 
+         appropriate components/
+        sub-systems/modules , as well as set one or
+        more kernel-configuration parameters
+   ---->once we copy it as a .config, we can
+        build our kernel-image for our target
+        system + other, binaries, like dynamic-modules ...
+
+c) -->we must use the following command to check, if 
+      all the kernel-configurations are taken care - if not,
+      there will be prompts, due to the following command ??
+
+   -->make ARCH=arm oldconfig
+
+   ----->if any specific configuration-parameter
+         is not covered, by supplied .config, there
+         will prompts....we need to select
+         appropriate settings....
+    ---->based on the above changes, .config will
+         be updated...
+======================================================================
+c') make ARCH=arm menuconfig, if needed ?? we can
+    temporarily, skip this step and possibly come back
+    and run , if required , in the future?? we may need
+    these for our assignments 
+      --->for instance, we may need to enable/disable,
+          one or more IO subsystems of the kernel
+      --->for instance, we may add or enable, or disable,
+          one or more existing device drivers
+      --->for instance, we may add or enable, or disable,
+          one or more custom  device-drivers
+      --->this may update the supplied template
+          .config file, again
+=========================================================================
+
+d) --->following are typical, kernel-build commands, that are used to
+      generate a type of kernel-image to be loaded, by
+      u-boot loader
+      --->older ARM kernel-image was uImage that was built on top of
+          zImage - it has certain header information used, by
+          u-boot boot-loader
+      --->recent u-boot loaders do not need, such special images,
+          so, we can just use the standard zImage, that is built
+          for ARM based embedded-linux  OS systems...
+
+
+---->for our u-boot loader version, we use just "zImage" to load a 
+     kernel, into the target 
+
+//following command will  build the actual, kernel-image, that
+//will be loaded, by the boot-loader, in the target-system 
+
+----> make -j 8  ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-   zImage
+       --->here, no. of cores is 4, so n is set to 8
+       --->if your system's no of cores is 2, set n to 4
+       ---->similarly, do the set-up 
+ 
+     ---->now, check ls -l <ksrctreedir>/arch/arm/boot/zImage 
+     
+
+ 
+
+e) --->this step  is, for building internal, dynamic-modules - 
+       these internal, dynamic-modules are built, but yet
+       to be installed - refer to the note below and follow
+       the further steps, in this procedure
+       make -j 8 ARCH=arm  CROSS_COMPILE=arm-linux-gnueabihf- modules
+                           (or)
+      //make ARCH=arm -j 4 CROSS_COMPILE=arm-linux-gnueabihf- modules
+
+note: we may have to install these built-in(not static),
+      dynamic-modules, into the
+      target's rootfs, after the target-rootfs is extracted and
+      stored, in a storage-device/location 
+
+     --->need to build dtbs - one or more of these will be used, in 
+         in the target-rootfs and loaded, along with a kernel-image  
+     ---->sudo make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- dtbs
+          --->dtbs are device-tree blobs/binaries generated from 
+              dts scripts - dts stands for device-tree source 
+
+--->we need to understand device-tree scripts, as per our 
+    SoC/Board's requirements - there are certain references 
+    provided in other documents  
+
+===========================================================================
+- in our case,
+      the "target rootfs" will be "a location on the host system
+      and exported to the target,
+      using NFS protocol" - this set-up is popular, for
+      typical embedded development -
+============================================================================
+
+note : following  steps must be done, in the top-directory of <ksrctree>
+note : in addition, in certain commands, we can use relative pathnames, 
+       like   vi  drivers/char/custom/Kconfig or vi drivers/char/custom/Makefile
+       - however, we must be , in the appropriate directory-location, so 
+         that, we can use proper relative-pathnames ??
+
+f) --->this step is related to problem-2 of assignment-3 - so, refer to 
+       Linux_kernel_space_dev_modules.txt
+
+       --->read line nos 5672 - 5760, for a good overview of problem-2
+
+       ---->read line nos.5761 - 6134,  specific steps and follow the 
+            command below :
+
+       ----> cd <ksrctreedir>
+
+       ----> mkdir -p   drivers/char/custom
+
+       ----> ls -ld  drivers/char/custom/
+
+       --->cp hello_n3.c   <ksrctreedir>/drivers/char/custom/
+       --->cp Kconfig   <ksrctreedir>/drivers/char/custom/
+       --->cp Makefile   <ksrctreedir>/drivers/char/custom/ 
+
+
+       ---->---->in this case, we are editing
+                 <ksrctreedir>/drivers/char/Kconfig file,
+                 as per comments, in <ksrctreedir>/drivers/char/custom/Kconfig
+
+
+      --------->in addition, edit its parent-directory's
+                Makefile - refer to the comments, in the
+                project-directory's Makefile
+
+Note : we should follow the below steps only - do not 
+       change any step and order of steps ???
+Note : if we have lost PATH settings, we can set-up the 
+       PATH environment-variable
+
+      --------->if all the above steps are correctly, done , 
+                run     make ARCH=arm oldconfig
+
+      --------->we can use one of the three-options :
+                  ---->internal,static-module option ---> 
+                  ---->internal,dynamic-module option ---->
+                  ---->disable kernel-module option ------>
+
+                --->initially, let select and enable, internal, static-module option
+                    --->this will change the kernel-configuration setting of 
+                        our custom-module's kernel-configuration parameter ???
+
+    =================================================================================================
+     ------>once we are comfortable, with make ARCH=arm oldconfig, 
+            we can use make ARCH=arm menuconfig, which is more 
+            verstaile and useful, in future configurations ??
+
+    ==================================================================================================
+note : following steps must be done, in the top directory of <ksrctree>
+
+     ---->again, revisit Kconfig script of our
+          project's module ??
+          ---->read the comments ??
+          ---->what do you understand from the comments ??
+            --->a new kernel configuration
+                parameter will be created,
+                CONFIG_CUSTOM_MODULE
+            --->in addition, based on the selection of
+                setting, CONFIG_CUSTOM_MODULE's value will
+                be set to y or m or n ??
+            --->check <ksrctree>/.config ??
+                --->check, if the settings are updated, as expect
+
+    --->after the above steps, we need to do the following, 
+        for further re-building of modules(internal static/ 
+        internal dynamic) and 
+        kernel-image  
+      
+
+       ----> make -j 8  ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-   zImage
+           --->here, no. of cores is 4, so n is set to 8
+           --->if your system's no of cores is 2, set n to 4
+           ---->similarly, do the set-up
+
+      --->this step  is, for building internal, dynamic-modules -
+          these internal, dynamic-modules are built, but yet
+          to be installed - refer to the note below and follow
+          the further steps, in this procedure
+          make -j 8 ARCH=arm  CROSS_COMPILE=arm-linux-gnueabihf- modules
+
+      --->need to build dtbs - one or more of these will be used, in 
+          in the target-rootfs and loaded, along with a kernel-image 
+     ---->sudo make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- dtbs
+
+g) --->further installation of kernel-image/binaries/internal dynamic-modules 
+     --->connect your card-reader/sd-card to host-system ??      
+
+note : these are different commands, so run them, as per your 
+       system's set-up and other locations - you may have to change
+       the following commands, as required ..... 
+
+     --->run lsblk on your host system 
+
+     --->identify your sd-card device-name/partitions ??
+
+     --->WARNING : this step must be done carefully, since 
+                   we will be overwriting the contents of 
+                   a storage-device ??
+
+    --->export DISK=/dev/sd?   -->fill appropriate value ?? 
+    --->echo $DISK   --->check the status ??
+
+    --->unmount <pathofapartitionofsd-card>   -->repeat this, as 
+                                                 many times
+
+    --->sudo dd if=/dev/zero of=${DISK} bs=1M count=10
+           --->delete partition set-up of sd-card 
+
+    --->use lsblk    --->check the current set of partitions
+
+    ---->sudo dd if=./u-boot/MLO of=${DISK} count=1 seek=1 bs=128k
+         -->as per Vendor requirements, we need to provide
+            a second-stage boot-loader 
+         -->this boot-loader will be used, by the first-stage
+            boot-loader, in ROM of the chipset - these are
+            standard, in many of the chipsets 
+
+    ----->sudo dd if=./u-boot/u-boot.img of=${DISK} count=2 seek=1 bs=384k
+         -->as per Vendor requirements, we need to provide
+            a third-stage boot-loader
+             -->this boot-loader will be used, by the second-stage
+                 boot-loader, which is the above one - these are
+                 standard, in many of the chipsets
+            --->this third-stage boot-loader actually, loads our 
+                kernel-image and related binaries - this plays the role
+                of grub, in this set-up - grub is not, for embedded-target 
+                requirements
+                --->so, following will be done :
+                    --->load a kernel-image 
+                    --->pass command-line parameters
+                    --->manipulate,load and pass a device-tree binary(dtb), 
+                        containing hw description details and more 
+
+   ---->now, let us partition and use the sd-card 
+
+       --->sudo sfdisk ${DISK} <<-__EOF__
+==>user-input-->  4M,,L,*
+==>user-input-->  __EOF__
+ 
+       ---->next, we must set-up a file-system layout, in the new-partition
+       ---->this file-system layout will be used to store a target-rootfs 
+  ----->sudo mkfs.ext4 -L rootfs -O ^metadata_csum,^64bit ${DISK}1
+
+  ---->next, we will mount a partition on an sd-card to copy of our 
+       target-rootfs
+  ----->sudo mkdir -p /media/rootfs/
+  ----->sudo mount ${DISK}1 /media/rootfs/     --->this will create an active file-system
+                                                   layout, with the help of VFS layer + 
+                                                   file-system manager + file-system layout
+
+  ----->next, we can use the target-rootfs layout and update it ??
+  ----->sudo mkdir -p /media/rootfs/opt/backup/uboot/      --->a back-up directory
+  ----->sudo cp -v ./u-boot/MLO /media/rootfs/opt/backup/uboot/   --->back-up files 
+  ----->sudo cp -v ./u-boot/u-boot.img /media/rootfs/opt/backup/uboot/ --->back-up files
+
+  ----->next, set an env. variable to our target's kernel-version
+  -----> echo ${kernel_version}    --->initially, none 
+  -----> export kernel_version=4.19.191-bone67  --->we set, as per our target's kernel-version 
+  -----> echo ${kernel_version}     --->check, after setting our value 
+
+
+
+  ----->next, copy rootfs-data , into the target file-system's layout - 
+        actually, this rootfs-data is an embedded-debian recommended, for 
+        our target's rootfs - so, effectively, we will be installing a 
+        debian Linux-OS on our target-system  
+
+   ---->wget -c https://rcn-ee.com/rootfs/eewiki/minfs/debian-10.10-minimal-armhf-2021-06-20.tar.xz
+   ---->tar xf debian-10.10-minimal-armhf-2021-06-20.tar.xz
+
+  -----> sudo tar xfvp ./debian-*-*-armhf-*/armhf-rootfs-*.tar -C /media/rootfs/
+  ----->sync   --->update the sd-card data
+
+  --->set the ownership and permissions ??
+  ---->sudo chown root:root /media/rootfs/
+  ---->sudo chmod 755 /media/rootfs/ 
+
+---->next, we need to install our target's kernel-image and internal, dynamic-modules, 
+     as built above - if not built, must complete and resume here ??
+    
+    ----->we are copying our target's kernel-image, into 
+          /boot directory of target's rootfs 
+    ----->sudo   cp    <targetksrctree>/arch/arm/boot/zImage  \
+          /media/rootfs/boot/vmlinuz-${kernel_version}
+================================================================================
+  ----->sudo  cp -v ./bb-kernel/deploy/${kernel_version}.zImage \
+        /media/rootfs/boot/vmlinuz-${kernel_version}
+================================================================================  
+
+   
+     --->next, we need to copy appropriate dtb(device-tree binary), into 
+         target's rootfs      
+     --->sudo mkdir -p /media/rootfs/boot/dtbs/${kernel_version}/
+     --->sudo cp <targetksrctree>/arch/arm/boot/dts/am335x-boneblack.dtb \
+         /media/rootfs/boot/dtbs/${kernel_version}/
+
+
+     ---->next, we need to install internal, dynamic-modules of our 
+          kernel-image, using the target's ksrctree and target-rootfs 
+     ---->sudo make  ARCH=arm  CROSS_COMPILE=arm-linux-gnueabihf-  \
+          INSTALL_MOD_PATH=/media/rootfs/  modules_install
+
+
+     ---->we need to update another file, which is a script - it is uEnv.txt
+     ---->this script-file contains settings and commands, for loading 
+          kernel-image and binaries, using u-boot loader - u-boot loader
+          will take the settings and commands from this script-file, 
+          during boot-up of the system - these are standard set-up and 
+          procedures( refer to https://www.linuxjournal.com/content/handy-u-boot-trick )
+     ---->we need to spot the location of this script-file 
+     ---->ls -l /media/rootfs/boot/uEnv.txt ??
+     ---->ls -l /media/rootfs/uEnv.txt ??
+
+      ---->ideally, a Vendor/developer will provide the above uEnv.txt 
+           -->if not, we need to find a suitable script-file, edit and 
+              copy, into   /media/rootfs/uEnv.txt 
+
+      ---->in our case, we have provided a well tested uEnv.txt
+     ---->we need to edit uname_r=${kernel_version}, in uEnv.txt  --->set it to appropriate version
+     ---->finally, do cp  uEnv.txt  /media/rootfs/uEnv.txt   --->copied, into target-rootfs, 
+                                                                 so that, u-boot can read and
+                                                                 take commands ... 
+     ---->check ls -l   /media/rootfs/uEnv.txt    ??
+     ---->check ls -l  /media/rootfs/boot/* 
+    ----->check ls -l  /media/rootfs/boot/dtbs/${kernel_version}/
+     ---->update data to the sd-card 
+     ---->sync
+
+     --->umount /media/rootfs/
+
+--->disconnect sd-card reader 
+
+--->now, the sd-card is ready, with a target-rootfs on a file-system layout
+
+==================================================================================================
+ sudo tar xfv ./bb-kernel/deploy/${kernel_version}-dtbs.tar.gz -C /media/rootfs/boot/dtbs/${kernel_version}/
+  tar xfv ./bb-kernel/deploy/${kernel_version}-modules.tar.gz -C /media/rootfs/
+   vi /media/rootfs/boot/uEnv.txt
+==================================================================================================
+
+h)
+
+---->from here onwards, we will be testing our kernel-image/binaries + target-rootfs on
+     beagle-bone black target-system ??
+      
+---->take-out your board , for use 
+     --->DO NOT CONNECT power to BB-B now - connect, 
+         after all the below set-up is done ??
+
+---->take-out your serial-debug cable , for use 
+
+---->refer to section 7.5 of BB-B manual 
+         --->refer to Figure 54 and details provided
+         --->refer to Table 13 , Jumper 1
+         --->refer to Figure 56 
+      --->our cable's ground-pin must be connected to pin 1 of Jumper 1 of BB-B
+      --->our cable's TX-pin must be conneted to pin 4 of Jumper 1 of BB-B 
+      --->our cable's RX-pin must be conneted to pin 5 of Jumper 1 of BB-B 
+      --->other pins of our serial-debug cable must be unconnected and 
+          left unused ?? 
+
+---->now, connect the USB-end of serial-debug cable to an usb-port 
+     on your host/PC system ??
+
+---->now, insert sd-card into sd-card slot of bb-b board - need to 
+     check, if the sd-card is properly seated ??
+---->ls -l /dev/ttyUSB0 ??
+
+--->run minicom -s
+--->set the settings of serial port, as mentioned, in 
+    lectures - save as dfl    
+
+---->next, run minicom  
+
+     ---->you should see the console is visible ??
+
+---->next, connect usb-cable's mini-B side to bb-b board
+
+---->now, press S2 and hold it on the bb-b board 
+     --->user-select switch on the board - it is above the 
+         sd-card slot 
+     --->when we press S2, ROM of the chipset will scan 
+         external sd-card, not on-board sd-card 
+     --->our development kernel/images and target-rootfs
+         are present, in external, sd-card
+     ---->so, MLO and u-boot.img will be loaded from 
+          external, sd-card....
+     ---->for further details, refer to 
+          https://www.linuxjournal.com/content/handy-u-boot-trick 
+
+
+
+---->now, while pressing-S2, 
+     connect the other end of usb-cable to host/PC to 
+     power the system.....keep the S2-switch pressed 
+---->after power-up(leds are ON), you can release S2-switch  
+     --->now, as mentioned above, external, sd-card's files/
+         images will be used to load MLO, u-boot.img, and
+         uEnv.txt 
+     --->using /uEnv.txt of our target-rootfs, u-boot will
+         run uenvcmd 
+     --->uenvcmd will load our kernel-image  and 
+         am335x-boneblack.dtb         
+     --->if everything goes on well, our kernel-image will 
+         be loaded and booted/initialized - this will also, 
+         include loading and initializing static-modules - 
+         init methods of static-modules are executed 
+     --->as part of all these, our target-rootfs will be 
+         used and mounted, during boot-up
+     --->finally, user-space set-up will be done, using 
+         systemd system-process
+     --->eventually, there will be a login-prompt 
+
+
+---->next, connect the other end of usb-cable to power-up the system ??
+
+
+i)
+
+--->in addition, we can use the following commands to build and use external, dynamic-modules, 
+    for bb-b target :
+
+--->set PATH, as described above, for arm-linux-gnueabihf-... 
+
+--->cd   <localdirofexternalmodules>
+---->edit your local Makefile 
+
+--->make  ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- \
+   -C /home/name/embedded_linux_ws_2021/kernels/KERNEL  M=`pwd` modules
+//after creating external-modules ,make a temp folder in the target's rootfs (NFS shared folder) , and 
+//copy the .ko files,into it and then, insmod on target system's console ?? 
+
+
+--->if we need to rebuild user-space code, for testing procfs or sysfs files, 
+    we need to do the following :
+
+    arm-linux-gnueabihf-gcc   <kobj_test.c>   -o   <kobj_t>
+
+    
+--->we can copy the above files, as below :
+
+    scp  <name.ko>  debian@192.9.200.2:/home/debian 
+
+    scp  <kobj_t>  debian@192.9.200.2:/home/debian 
+
+
+--->now, load the kernel-module, in a bb-b/target
+--->run  <kobj_t>  , in the same bb-b/target 
+
+
+
+
+j) need to edit the following, in /etc/default/bb-boot
+   ---> USB_NETWORK_DISABLED=yes #disable the loading of the network.
+   ---> save file and reboot 
+
+
+k) --->we need to configure our network-device on bb-b/target
+
+   ---->sudo -i
+
+   ifconfig -a
+
+   systemctl status connman
+   connmanctl services
+
+   connmanctl config <ethernet_9059af6a4316_cable>  \
+          --ipv4 manual 192.9.200.2 255.255.255.0 192.9.200.1 
+
+   systemctl restart connman
+   systemctl status connman
+
+   ifconfig -a
+
+   ping 192.9.200.1  (ping our host machine)
+   --->we may get error messages.....
+
+
+   reboot your bb-b/target
+
+   login, again 
+
+   --->sudo -i 
+
+   ifconfig  -a 
+
+   --->we should not be seeing usb0 and usb1 
+   --->we should be seeing eth0 set-up, correctly  
+    
+
+l) now, let us do some configuration on host-machine's ethernet-device 
+
+   --->sudo -i
+
+   --->nmcli connection show
+
+   --->ifconfig -a
+
+   --->nmcli device show
+       --->we need to identify our ethernet-device's name
+                  --->starts, with e..... 
+       --->WARNING : do not touch wifi-device's name - it starts, with 
+                     w.....
+
+      --->in the following command, last parameter will be our ethernet- 
+          device's name
+   --->nmcli connection add type ethernet autoconnect no ifname <enp4s0>
+    --->if the previous command is successful, you should be 
+        seeing a connection-management option, for your 
+        ethernet-device ....
+   ---->following commands will use our connection-management and
+        set-up our ethernet-device 
+
+  ---->nmcli connection show
+
+  ---->nmcli connection modify <ethernet-enp4s0>   ipv4.addresses 192.9.200.1/24
+
+  ---->nmcli connection modify <ethernet-enp4s0>  ipv4.method manual
+
+  ---->ifconfig -a
+
+----> nmcli -p con up <ethernet-enp4s0>
+ 
+  ---->  ifconfig -a
+
+
+---->if all the above work, as expected, you can run 
+     ping 192.9.200.2  ---->ping the target 
+
+---->also, you can switch to bb-b/target's console and run 
+     ping 192.9.200.1  ----> ping the host  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+           
