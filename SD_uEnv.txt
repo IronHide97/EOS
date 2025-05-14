@@ -1,0 +1,18 @@
+loadaddr=0x82000000
+fdtaddr=0x88000000
+rdaddr=0x88080000
+
+fdtfile=am335x-boneblack.dtb
+
+initrd_high=0xffffffff
+fdt_high=0xffffffff
+mmcroot=/dev/mmcblk0p1
+uname_r=4.19.191-bb_b_eos
+loadximage=load mmc 0:1 ${loadaddr} /boot/vmlinuz-${uname_r} ##This comment is intentionally putted
+loadxfdt=echo ${fdtfile}; load mmc 0:1 ${fdtaddr} /boot/dtbs/${uname_r}/${fdtfile}
+loadxrd=load mmc 0:1 ${rdaddr} /boot/initrd.img-${uname_r}; setenv rdsize ${filesize}
+loadall=run loadximage; run loadxfdt; run init_console
+
+mmcargs=setenv bootargs console=${console} ${optargs} ${cape_disable} ${cape_enable} root=${mmcroot} rw rootfstype=${mmcrootfstype} ${cmdline} loglevel=0 initcall_debug
+
+uenvcmd=echo "custom uenvcmd"; run loadall; run mmcargs;  bootz ${loadaddr} - ${fdtaddr};
